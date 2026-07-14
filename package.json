@@ -1,0 +1,14 @@
+{
+  "name": "ai-question-generator",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "python3 python_flask_app/app.py",
+    "build": "echo 'Python Flask App: No build required.'",
+    "start": "python3 python_flask_app/app.py",
+    "lint": "echo 'No lint required.'"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

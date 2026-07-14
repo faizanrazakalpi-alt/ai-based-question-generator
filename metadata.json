@@ -1,0 +1,6 @@
+{
+  "name": "AI Based Question Generator",
+  "description": "An intelligent question generator powered by Gemini AI, with parameter tuning, interactive quizzes, and export options.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

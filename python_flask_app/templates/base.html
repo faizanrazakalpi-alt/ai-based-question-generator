@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Based Question Generator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2, h3, .font-serif {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3f3f46;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-[#0a0a0a] text-[#d4d4d8] flex flex-col font-sans selection:bg-white selection:text-black">
+    <!-- Top Header Navigation -->
+    <header class="sticky top-0 z-10 bg-[#0d0d0d]/85 backdrop-blur-md border-b border-white/5 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center shadow-2xl">
+                    <i data-lucide="brain" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h1 class="font-serif text-xl font-bold tracking-tight text-white flex items-center gap-1.5">
+                        AI Based Question Generator
+                    </h1>
+                    <p class="text-[10px] text-zinc-500 uppercase tracking-widest font-medium">
+                        SaaS Educational Resource Builder & Quiz Engine
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                {% if profile %}
+                <div class="text-right hidden md:block mr-2">
+                    <div class="text-xs font-bold text-zinc-300">Hello, {{ profile.username }}!</div>
+                    <div class="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">
+                        Target: {{ profile.grade_level }}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Main Tabs Navigation -->
+                <nav class="bg-white/5 p-1 rounded-xl flex gap-1 text-[11px] font-bold border border-white/5">
+                    <a href="{{ url_for('index') }}" 
+                       class="px-4 py-2 rounded-lg transition-all uppercase tracking-wider {% if request.path == '/' or request.path == url_for('index') %}bg-white text-black font-bold shadow-md{% else %}text-zinc-500 hover:text-zinc-200{% endif %}">
+                        Workspace
+                    </a>
+                    <a href="{{ url_for('saved_sets') }}" 
+                       class="px-4 py-2 rounded-lg transition-all uppercase tracking-wider {% if request.path == url_for('saved_sets') %}bg-white text-black font-bold shadow-md{% else %}text-zinc-500 hover:text-zinc-200{% endif %}">
+                        Saved Sets
+                    </a>
+                    <a href="{{ url_for('profile') }}" 
+                       class="px-4 py-2 rounded-lg transition-all uppercase tracking-wider {% if request.path == url_for('profile') %}bg-white text-black font-bold shadow-md{% else %}text-zinc-500 hover:text-zinc-200{% endif %}">
+                        Profile & Stats
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+                {% for message in messages %}
+                    <div class="bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 rounded-xl p-4 flex items-start gap-3 text-sm font-medium">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-indigo-400 shrink-0 mt-0.5"></i>
+                        <div class="flex-1">
+                            <p class="text-xs">{{ message }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content Stage -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 md:px-6">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#0d0d0d]/40 border-t border-white/5 py-6 px-6 text-center text-[10px] text-zinc-500 uppercase tracking-widest mt-12">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <span>AI Based Question Generator &copy; 2026 | Full-Stack Python Flask App</span>
+            <span class="flex items-center gap-1 font-semibold text-zinc-400">
+                Powered by Gemini AI • Active Connection 
+                {% if db_type == 'mysql' %}
+                    <span class="text-emerald-500 font-bold flex items-center gap-1"><span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>MySQL</span>
+                {% else %}
+                    <span class="text-amber-500 font-bold flex items-center gap-1"><span class="inline-block w-2 h-2 rounded-full bg-amber-500"></span>SQLite</span>
+                {% endif %}
+            </span>
+        </div>
+    </footer>
+
+    <!-- Initialize Lucide Icons -->
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

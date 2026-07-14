@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[580px]">
+    <!-- Left Column: Generator Form (Span 4) -->
+    <div class="lg:col-span-4 flex flex-col gap-6">
+        <div class="bg-[#0d0d0d] rounded-2xl border border-white/10 p-6 shadow-2xl h-full flex flex-col">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="p-2.5 bg-white/5 text-white rounded-xl border border-white/10">
+                    <i data-lucide="book-open" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h2 class="font-serif text-lg font-bold text-white tracking-tight">Quiz Settings</h2>
+                    <p class="text-[10px] text-zinc-500 uppercase tracking-widest font-medium">Configure Synthesis Parameters</p>
+                </div>
+            </div>
+
+            <form id="generatorForm" action="{{ url_for('generate') }}" method="POST" class="space-y-6 flex-1 flex flex-col justify-between">
+                <div class="space-y-5">
+                    <!-- Topic Selector -->
+                    <div>
+                        <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
+                            Select or Type Topic
+                        </label>
+
+                        <!-- Quick selectors -->
+                        <div class="grid grid-cols-2 gap-2.5 mb-3">
+                            <button type="button" onclick="selectQuickTopic('Photosynthesis', this)" class="quick-topic-btn flex items-center gap-2 p-2.5 rounded-xl border border-white/30 bg-white/10 text-white shadow-sm text-left transition-all cursor-pointer">
+                                <div class="p-1.5 rounded-lg shrink-0 text-emerald-400 bg-emerald-500/10">
+                                    <i data-lucide="brain" class="w-3.5 h-3.5"></i>
+                                </div>
+                                <span class="text-xs font-medium truncate">Photosynthesis</span>
+                            </button>
+                            <button type="button" onclick="selectQuickTopic('Roman Empire', this)" class="quick-topic-btn flex items-center gap-2 p-2.5 rounded-xl border border-white/5 bg-[#0a0a0a]/50 hover:border-white/25 text-zinc-400 hover:text-zinc-200 text-left transition-all cursor-pointer">
+                                <div class="p-1.5 rounded-lg shrink-0 text-amber-400 bg-amber-500/10">
+                                    <i data-lucide="globe" class="w-3.5 h-3.5"></i>
+                                </div>
+                                <span class="text-xs font-medium truncate">Roman Empire</span>
+                            </button>
+                            <button type="button" onclick="selectQuickTopic('Quadratic Equations', this)" class="quick-topic-btn flex items-center gap-2 p-2.5 rounded-xl border border-white/5 bg-[#0a0a0a]/50 hover:border-white/25 text-zinc-400 hover:text-zinc-200 text-left transition-all cursor-pointer">
+                                <div class="p-1.5 rounded-lg shrink-0 text-indigo-400 bg-indigo-500/10">
+                                    <i data-lucide="award" class="w-3.5 h-3.5"></i>
+                                </div>
+                                <span class="text-xs font-medium truncate">Quadratic Eq</span>
+                            </button>
+                            <button type="button" onclick="selectQuickTopic('Solar System', this)" class="quick-topic-btn flex items-center gap-2 p-2.5 rounded-xl border border-white/5 bg-[#0a0a0a]/50 hover:border-white/25 text-zinc-400 hover:text-zinc-200 text-left transition-all cursor-pointer">
+                                <div class="p-1.5 rounded-lg shrink-0 text-sky-400 bg-sky-500/10">
+                                    <i data-lucide="compass" class="w-3.5 h-3.5"></i>
+                                </div>
+                                <span class="text-xs font-medium truncate">Solar System</span>
+                            </button>
+                        </div>
+
+                        <!-- Custom Topic Toggle Button & Input -->
+                        <div class="mb-3">
+                            <button type="button" onclick="toggleCustomTopic(true)" id="customTopicToggle" class="w-full flex items-center justify-center gap-2 p-2 rounded-xl border border-white/5 bg-[#0a0a0a]/50 hover:border-white/25 text-zinc-400 hover:text-zinc-200 text-xs font-medium transition-all cursor-pointer">
+                                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                                <span>Or Use Custom Topic</span>
+                            </button>
+                        </div>
+
+                        <!-- Main Topic Input (Hidden initially if quick topic active, or vice-versa) -->
+                        <div id="topicInputContainer" class="hidden">
+                            <input type="text" id="topicInput" name="topic" required
+                                   placeholder="e.g. Ancient Greek Philosophy, Java OOP..." 
+                                   value="{{ profile.default_subject if profile else 'Photosynthesis' }}"
+                                   class="w-full px-3.5 py-2.5 bg-[#0a0a0a] border border-white/10 rounded-xl text-sm text-white placeholder:text-zinc-700 focus:outline-none focus:border-white/30 font-sans">
+                        </div>
+
+                        <div id="activeTopicBadge" class="text-xs bg-white/5 text-zinc-300 px-3 py-2.5 rounded-xl border border-white/5 flex items-center gap-2">
+                            <span class="font-semibold text-white">Active Topic:</span> 
+                            <span id="activeTopicText">Photosynthesis</span>
+                        </div>
+                    </div>
+
+                    <!-- Difficulty Selection -->
+                    <div>
+                        <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
+                            Difficulty Level
+                        </label>
+                        <input type="hidden" name="difficulty" id="difficultyInput" value="Medium">
+                        <div class="grid grid-cols-3 gap-2">
+                            <button type="button" onclick="selectDifficulty('Easy', this)" class="difficulty-btn py-2 rounded-xl border bg-white/5 border-white/10 text-zinc-400 hover:border-white/25 hover:text-white text-xs font-semibold transition-all cursor-pointer">
+                                Easy
+                            </button>
+                            <button type="button" onclick="selectDifficulty('Medium', this)" class="difficulty-btn py-2 rounded-xl border bg-white border-white text-black shadow-sm text-xs font-semibold transition-all cursor-pointer">
+                                Medium
+                            </button>
+                            <button type="button" onclick="selectDifficulty('Hard', this)" class="difficulty-btn py-2 rounded-xl border bg-white/5 border-white/10 text-zinc-400 hover:border-white/25 hover:text-white text-xs font-semibold transition-all cursor-pointer">
+                                Hard
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Question Format Selection -->
+                    <div>
+                        <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
+                            Question Format
+                        </label>
+                        <input type="hidden" name="question_type" id="formatInput" value="multiple-choice">
+                        <div class="space-y-2">
+                            <button type="button" onclick="selectFormat('multiple-choice', this)" class="format-btn w-full flex items-center justify-between p-3 rounded-xl border border-white/30 bg-white/10 text-white text-xs font-semibold transition-all cursor-pointer">
+                                <span>Multiple Choice (4 options)</span>
+                                <div class="format-indicator w-4 h-4 rounded-full border border-white bg-white flex items-center justify-center">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-[#0a0a0a]"></div>
+                                </div>
+                            </button>
+                            <button type="button" onclick="selectFormat('true-false', this)" class="format-btn w-full flex items-center justify-between p-3 rounded-xl border border-white/5 bg-[#0a0a0a]/30 hover:border-white/25 text-zinc-400 hover:text-zinc-200 text-xs font-semibold transition-all cursor-pointer">
+                                <span>True / False</span>
+                                <div class="format-indicator w-4 h-4 rounded-full border border-zinc-700 flex items-center justify-center"></div>
+                            </button>
+                            <button type="button" onclick="selectFormat('short-answer', this)" class="format-btn w-full flex items-center justify-between p-3 rounded-xl border border-white/5 bg-[#0a0a0a]/30 hover:border-white/25 text-zinc-400 hover:text-zinc-200 text-xs font-semibold transition-all cursor-pointer">
+                                <span>Short Answer (Direct Q&A)</span>
+                                <div class="format-indicator w-4 h-4 rounded-full border border-zinc-700 flex items-center justify-center"></div>
+                            </button>
+                            <button type="button" onclick="selectFormat('mixed', this)" class="format-btn w-full flex items-center justify-between p-3 rounded-xl border border-white/5 bg-[#0a0a0a]/30 hover:border-white/25 text-zinc-400 hover:text-zinc-200 text-xs font-semibold transition-all cursor-pointer">
+                                <span>Mixed / Multi-Format (All Types)</span>
+                                <div class="format-indicator w-4 h-4 rounded-full border border-zinc-700 flex items-center justify-center"></div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Count Slider -->
+                    <div>
+                        <div class="flex justify-between text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
+                            <span>Number of Questions</span>
+                            <span id="sliderValue" class="text-white font-mono">5</span>
+                        </div>
+                        <input type="range" name="count" min="3" max="15" value="5" id="countSlider" oninput="updateSliderValue(this.value)" class="w-full accent-white cursor-pointer h-1.5 bg-zinc-800 rounded-lg appearance-none">
+                        <div class="flex justify-between text-[10px] text-zinc-600 font-mono mt-1">
+                            <span>3</span>
+                            <span>5</span>
+                            <span>10</span>
+                            <span>15</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full mt-6 flex items-center justify-center gap-2 py-3 px-4 rounded-full text-xs font-bold text-black bg-white hover:bg-zinc-200 transition-all cursor-pointer uppercase tracking-widest font-sans">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-black"></i>
+                    <span>Initiate Synthesis</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right Column: Workspace Stage / Real-time Loading Stage (Span 8) -->
+    <div class="lg:col-span-8 flex flex-col h-full justify-between gap-6">
+        <!-- Normal Display Stage -->
+        <div id="welcomeStage" class="bg-[#0d0d0d] border border-white/5 rounded-2xl shadow-2xl h-full flex flex-col items-center justify-center p-8 text-center min-h-[450px]">
+            <div class="w-14 h-14 bg-white/5 border border-white/10 text-white rounded-2xl flex items-center justify-center mb-4">
+                <i data-lucide="sparkles" class="w-5 h-5 text-zinc-300"></i>
+            </div>
+            <h3 class="font-serif text-base font-bold text-white mb-1.5">
+                Your AI Study Space is Ready
+            </h3>
+            <p class="text-xs text-zinc-500 max-w-sm mb-8 leading-relaxed">
+                Select subjects and set your desired difficulty parameters on the left, then click <strong>Initiate Synthesis</strong> to instantly generate a curriculum question set.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-6 text-[10px] font-bold uppercase tracking-wider text-zinc-500 border-t border-white/5 pt-6 w-full max-w-md">
+                <div class="flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                    <span>Curriculum Structured</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span>
+                    <span>Full Explanations</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span>Direct Quiz Testing</span>
+                </div>
+            </div>
+
+            <!-- Database connection details embedded elegantly at bottom of workspace -->
+            <div class="mt-8 pt-4 w-full text-left max-w-xl">
+                {% if db_type == 'mysql' %}
+                <div class="bg-emerald-500/5 border border-emerald-500/10 p-4 rounded-xl flex items-start gap-2.5">
+                    <div class="p-1 bg-emerald-500/10 rounded-lg text-emerald-400">
+                        <i data-lucide="database" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                            Active Sync Connection: MySQL Cloud SQL
+                        </h4>
+                        <p class="text-[10px] text-zinc-400 leading-relaxed mt-0.5">
+                            All study sets, learning records, and quiz attempt summaries are synchronized and saved in your production MySQL instance.
+                        </p>
+                    </div>
+                </div>
+                {% else %}
+                <div class="bg-white/[0.02] border border-white/5 p-4 rounded-xl flex items-start gap-2.5">
+                    <div class="p-1 bg-amber-500/10 rounded-lg text-amber-400">
+                        <i data-lucide="database-backup" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-zinc-300 flex items-center gap-1.5">
+                            SQLite Connection Fallback Active
+                        </h4>
+                        <p class="text-[10px] text-zinc-500 leading-relaxed mt-0.5">
+                            Local file system backup SQLite is currently active. To use persistent MySQL, define environment credentials inside the AI Studio secrets drawer: 
+                            <span class="font-mono bg-black/40 text-indigo-400 px-1 py-0.5 rounded">DB_HOST</span>, 
+                            <span class="font-mono bg-black/40 text-indigo-400 px-1 py-0.5 rounded">DB_USER</span>, 
+                            <span class="font-mono bg-black/40 text-indigo-400 px-1 py-0.5 rounded">DB_PASSWORD</span>.
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Synthesis Loading Stage (Hidden until form submit) -->
+        <div id="loadingStage" class="hidden bg-[#0d0d0d] border border-white/5 rounded-2xl shadow-2xl h-full flex-col items-center justify-center p-8 text-center min-h-[450px]">
+            <div class="relative w-16 h-16 mb-6">
+                <div class="absolute inset-0 border-4 border-white/5 rounded-full"></div>
+                <div class="absolute inset-0 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                <div class="absolute inset-0 flex items-center justify-center text-white">
+                    <i data-lucide="graduation-cap" class="w-6 h-6 animate-bounce"></i>
+                </div>
+            </div>
+            <h3 class="font-serif text-lg font-bold text-white mb-1.5 animate-pulse">
+                Drafting Questions with Gemini AI
+            </h3>
+            <p class="text-xs text-zinc-500 max-w-sm leading-relaxed">
+                We are generating curriculum-appropriate questions, choices, answers, and explanations. This takes only a few seconds.
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function selectQuickTopic(topicName, element) {
+        // Remove active class from all quick topic buttons
+        document.querySelectorAll('.quick-topic-btn').forEach(btn => {
+            btn.classList.remove('border-white/30', 'bg-white/10', 'text-white', 'shadow-sm');
+            btn.classList.add('border-white/5', 'bg-[#0a0a0a]/50', 'text-zinc-400');
+        });
+
+        // Add active classes to selected button
+        element.classList.add('border-white/30', 'bg-white/10', 'text-white', 'shadow-sm');
+        element.classList.remove('border-white/5', 'bg-[#0a0a0a]/50', 'text-zinc-400');
+
+        // Update hidden/main topic input value and display text
+        document.getElementById('topicInput').value = topicName;
+        document.getElementById('activeTopicText').innerText = topicName;
+
+        // Hide input field, show badge
+        document.getElementById('topicInputContainer').classList.add('hidden');
+        document.getElementById('activeTopicBadge').classList.remove('hidden');
+        document.getElementById('customTopicToggle').classList.remove('border-white/30', 'bg-white/10', 'text-white');
+    }
+
+    function toggleCustomTopic(showInput) {
+        // Reset quick topic buttons
+        document.querySelectorAll('.quick-topic-btn').forEach(btn => {
+            btn.classList.remove('border-white/30', 'bg-white/10', 'text-white', 'shadow-sm');
+            btn.classList.add('border-white/5', 'bg-[#0a0a0a]/50', 'text-zinc-400');
+        });
+
+        const inputContainer = document.getElementById('topicInputContainer');
+        const activeBadge = document.getElementById('activeTopicBadge');
+        const customToggle = document.getElementById('customTopicToggle');
+        const topicInput = document.getElementById('topicInput');
+
+        if (showInput) {
+            inputContainer.classList.remove('hidden');
+            activeBadge.classList.add('hidden');
+            customToggle.classList.add('border-white/30', 'bg-white/10', 'text-white');
+            topicInput.value = "";
+            topicInput.focus();
+        }
+    }
+
+    // Monitor input changes if custom is active
+    document.getElementById('topicInput').addEventListener('input', function(e) {
+        if (!document.getElementById('topicInputContainer').classList.contains('hidden')) {
+            // Keep active topic label updated if they are typing
+            document.getElementById('activeTopicText').innerText = e.target.value || "Custom Topic...";
+        }
+    });
+
+    function selectDifficulty(level, element) {
+        // Remove active class from all difficulty buttons
+        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+            btn.classList.remove('bg-white', 'border-white', 'text-black', 'shadow-sm');
+            btn.classList.add('bg-white/5', 'border-white/10', 'text-zinc-400');
+        });
+
+        // Add active to current
+        element.classList.add('bg-white', 'border-white', 'text-black', 'shadow-sm');
+        element.classList.remove('bg-white/5', 'border-white/10', 'text-zinc-400');
+
+        // Set value in hidden input
+        document.getElementById('difficultyInput').value = level;
+    }
+
+    function selectFormat(formatId, element) {
+        // Reset all formats
+        document.querySelectorAll('.format-btn').forEach(btn => {
+            btn.classList.remove('border-white/30', 'bg-white/10', 'text-white');
+            btn.classList.add('border-white/5', 'bg-[#0a0a0a]/30', 'text-zinc-400');
+            const ind = btn.querySelector('.format-indicator');
+            ind.innerHTML = '';
+            ind.className = "format-indicator w-4 h-4 rounded-full border border-zinc-700 flex items-center justify-center";
+        });
+
+        // Activate selected
+        element.classList.add('border-white/30', 'bg-white/10', 'text-white');
+        element.classList.remove('border-white/5', 'bg-[#0a0a0a]/30', 'text-zinc-400');
+        
+        const ind = element.querySelector('.format-indicator');
+        ind.className = "format-indicator w-4 h-4 rounded-full border border-white bg-white flex items-center justify-center";
+        ind.innerHTML = '<div class="w-1.5 h-1.5 rounded-full bg-[#0a0a0a]"></div>';
+
+        document.getElementById('formatInput').value = formatId;
+    }
+
+    function updateSliderValue(val) {
+        document.getElementById('sliderValue').innerText = val;
+    }
+
+    // Capture form submission to show the beautiful generation loading stage
+    document.getElementById('generatorForm').addEventListener('submit', function() {
+        document.getElementById('welcomeStage').classList.add('hidden');
+        document.getElementById('loadingStage').classList.remove('hidden');
+        document.getElementById('loadingStage').classList.add('flex');
+    });
+</script>
+{% endblock %}

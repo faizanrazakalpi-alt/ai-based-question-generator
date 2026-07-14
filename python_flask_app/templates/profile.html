@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-6">
+    <!-- Left Column: Profile Card & Default Configurations Form (Span 5) -->
+    <div class="md:col-span-5 flex flex-col gap-6">
+        <div class="bg-[#0d0d0d] rounded-2xl border border-white/10 p-6 shadow-2xl h-full flex flex-col justify-between">
+            <div>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-2.5 bg-white/5 text-white rounded-xl border border-white/10">
+                        <i data-lucide="user" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-serif text-lg font-bold text-white tracking-tight">Your Profile</h2>
+                        <p class="text-[10px] text-zinc-500 uppercase tracking-widest font-medium">Track Stats & Defaults</p>
+                    </div>
+                </div>
+
+                <!-- Stats Indicators Grid -->
+                <div class="grid grid-cols-3 gap-3 mb-8">
+                    <div class="bg-white/5 border border-white/5 p-4 rounded-2xl text-center">
+                        <i data-lucide="clipboard-list" class="w-4 h-4 text-zinc-300 mx-auto mb-1.5"></i>
+                        <div class="font-mono text-lg font-bold text-white">{{ profile.questions_generated }}</div>
+                        <div class="text-[8px] text-zinc-500 font-bold uppercase tracking-wider">Questions</div>
+                    </div>
+                    <div class="bg-white/5 border border-white/5 p-4 rounded-2xl text-center">
+                        <i data-lucide="award" class="w-4 h-4 text-emerald-400 mx-auto mb-1.5"></i>
+                        <div class="font-mono text-lg font-bold text-white">{{ profile.quizzes_taken }}</div>
+                        <div class="text-[8px] text-zinc-500 font-bold uppercase tracking-wider">Quizzes</div>
+                    </div>
+                    <div class="bg-white/5 border border-white/5 p-4 rounded-2xl text-center">
+                        <i data-lucide="percent" class="w-4 h-4 text-amber-400 mx-auto mb-1.5"></i>
+                        <div class="font-mono text-lg font-bold text-white">{{ profile.average_score }}%</div>
+                        <div class="text-[8px] text-zinc-500 font-bold uppercase tracking-wider">Avg Score</div>
+                    </div>
+                </div>
+
+                <!-- Configurations Form -->
+                <form action="{{ url_for('profile') }}" method="POST" class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5">
+                            Username
+                        </label>
+                        <input type="text" name="username" required value="{{ profile.username }}"
+                               class="w-full px-3.5 py-2.5 bg-[#0a0a0a] border border-white/10 rounded-xl text-xs text-white placeholder:text-zinc-700 focus:outline-none focus:border-white/30 font-sans">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5">
+                            Default Grade Level
+                        </label>
+                        <select name="grade_level"
+                                class="w-full px-3.5 py-2.5 bg-[#0a0a0a] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-white/30 [&>option]:bg-zinc-950 [&>option]:text-zinc-300">
+                            {% for lvl in ['Elementary School', 'Middle School', 'High School', 'University', 'Professional'] %}
+                            <option value="{{ lvl }}" {% if profile.grade_level == lvl %}selected{% endif %}>{{ lvl }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5">
+                            Default Favorite Subject
+                        </label>
+                        <input type="text" name="default_subject" required value="{{ profile.default_subject }}"
+                               class="w-full px-3.5 py-2.5 bg-[#0a0a0a] border border-white/10 rounded-xl text-xs text-white placeholder:text-zinc-700 focus:outline-none focus:border-white/30 font-sans">
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-full text-xs font-bold text-black bg-white hover:bg-zinc-200 transition-all shadow-sm cursor-pointer uppercase tracking-widest font-sans">
+                            <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                            <span>Save Settings</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Subject Performance & Learning Analytics (Span 7) -->
+    <div class="md:col-span-7">
+        <div class="bg-[#0d0d0d] rounded-2xl border border-white/10 p-6 shadow-2xl h-full flex flex-col justify-between">
+            <div>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-2.5 bg-white/5 text-white rounded-xl border border-white/10">
+                        <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-serif text-lg font-bold text-white tracking-tight">Subject Performance & Learning Analytics</h2>
+                        <p class="text-[10px] text-zinc-500 uppercase tracking-widest font-medium">Metrics automatically compiled from active study sets</p>
+                    </div>
+                </div>
+
+                <!-- Custom visual distribution or activity lists -->
+                <div class="space-y-6">
+                    <div class="bg-white/[0.02] rounded-xl p-4 border border-white/5">
+                        <h3 class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-3">Target Curriculum Status</h3>
+                        <div class="flex flex-wrap gap-2.5">
+                            <div class="flex items-center gap-1.5 px-3 py-1.5 bg-[#0a0a0a] border border-white/5 rounded-lg text-xs font-medium text-zinc-300">
+                                <span class="text-zinc-500">Curriculum Tier:</span>
+                                <span class="font-bold text-white">{{ profile.grade_level }}</span>
+                            </div>
+                            <div class="flex items-center gap-1.5 px-3 py-1.5 bg-[#0a0a0a] border border-white/5 rounded-lg text-xs font-medium text-zinc-300">
+                                <span class="text-zinc-500">Core Subject:</span>
+                                <span class="font-bold text-white">{{ profile.default_subject }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/[0.02] rounded-xl p-4 border border-white/5">
+                        <h3 class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-3">Study Activity Overview</h3>
+                        <p class="text-xs text-zinc-500 leading-relaxed mb-4">
+                            Take interactive quizzes in the <a href="{{ url_for('saved_sets') }}" class="text-white underline hover:text-zinc-200">Saved Sets</a> module to build your accuracy average and unlock deep performance stats.
+                        </p>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-black/30 p-3 rounded-lg border border-white/5">
+                                <span class="text-[8px] text-zinc-500 uppercase tracking-wider font-bold block">Accuracy Profile</span>
+                                <span class="text-sm font-mono font-bold text-white block mt-1">
+                                    {% if profile.quizzes_taken > 0 %}{{ profile.average_score }}%{% else %}N/A{% endif %}
+                                </span>
+                            </div>
+                            <div class="bg-black/30 p-3 rounded-lg border border-white/5">
+                                <span class="text-[8px] text-zinc-500 uppercase tracking-wider font-bold block">Database Integration</span>
+                                <span class="text-xs font-semibold text-emerald-400 block mt-1 capitalize">
+                                    {{ db_type }} ACTIVE
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Database connection alerts -->
+            <div class="mt-8 pt-4 border-t border-white/5">
+                {% if db_error %}
+                <div class="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-300 rounded-xl text-xs font-medium">
+                    <span class="font-bold">Database Warning:</span> {{ db_error }}
+                </div>
+                {% else %}
+                <div class="p-3 bg-white/5 border border-white/5 text-zinc-500 rounded-xl text-[10px] uppercase tracking-wider text-center font-bold">
+                    Curriculum metrics synced perfectly with {{ db_type }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
